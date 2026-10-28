@@ -22,44 +22,108 @@ from metrics import (
 
 st.set_page_config(page_title="Momentum Backtester", layout="wide")
 
+# ── Terminal-inspired dark theme ──
 st.markdown("""
 <style>
-    .block-container {padding-top: 1rem; padding-bottom: 1rem; max-width: 1200px;}
-    [data-testid="stMetric"] {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        border-radius: 10px; padding: 14px 18px;
-        border: 1px solid #e9ecef;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    .stApp {background-color: #0a0e17;}
+    .block-container {padding-top: 1.2rem; padding-bottom: 1rem; max-width: 1200px;}
+    header[data-testid="stHeader"] {background: #0a0e17;}
+
+    /* Sidebar */
+    section[data-testid="stSidebar"] {background: #0d1220; border-right: 1px solid #1a2332;}
+    section[data-testid="stSidebar"] * {color: #8892a4 !important;}
+    section[data-testid="stSidebar"] .stSlider label,
+    section[data-testid="stSidebar"] .stToggle label {color: #c0c8d8 !important; font-family: 'Inter', sans-serif;}
+    section[data-testid="stSidebar"] h3 {color: #00d4aa !important; font-family: 'JetBrains Mono', monospace; font-size: 14px !important; letter-spacing: 1.5px; text-transform: uppercase;}
+
+    /* Global text */
+    .stApp, .stApp p, .stApp span, .stApp div {color: #c0c8d8;}
+    h1, h2, h3, h4 {color: #e8ecf2 !important; font-family: 'Inter', sans-serif !important;}
+    h1 {font-size: 1.6rem !important; letter-spacing: -0.02em;}
+    .stCaption, .stCaption p {color: #4a5568 !important; font-family: 'JetBrains Mono', monospace !important; font-size: 11px !important;}
+    hr {border-color: #1a2332 !important;}
+
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {gap: 0; background: #0d1220; border-radius: 8px; padding: 3px; border: 1px solid #1a2332;}
+    .stTabs [data-baseweb="tab"] {
+        padding: 8px 20px; font-weight: 600; font-size: 13px;
+        font-family: 'JetBrains Mono', monospace; color: #4a5568 !important;
+        border-radius: 6px; letter-spacing: 0.3px;
     }
-    .kpi-row {display: flex; gap: 12px; margin: 12px 0 20px 0; flex-wrap: wrap;}
+    .stTabs [aria-selected="true"] {background: #141c2b !important; color: #00d4aa !important;}
+
+    /* KPI cards — terminal style */
+    .kpi-row {display: flex; gap: 10px; margin: 14px 0 22px 0; flex-wrap: wrap;}
     .kpi-card {
-        flex: 1; min-width: 150px; padding: 14px 18px; border-radius: 12px;
-        border: 1px solid #e9ecef; background: #fff;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        flex: 1; min-width: 150px; padding: 16px 18px; border-radius: 8px;
+        background: #0d1220; border: 1px solid #1a2332;
     }
-    .kpi-card .label {font-size: 12px; font-weight: 600; color: #6c757d; margin-bottom: 4px;}
-    .kpi-card .value {font-size: 24px; font-weight: 700; margin-bottom: 2px;}
-    .kpi-card .delta {font-size: 12px; font-weight: 500; color: #6c757d;}
-    .explanation {
-        background: #1a1a2e; border-left: 4px solid #3498db;
-        padding: 14px 18px; border-radius: 0 8px 8px 0;
-        margin-bottom: 16px; font-size: 14px; line-height: 1.7;
-        color: #e0e0e0; border: 1px solid #2a2a4a;
+    .kpi-card .label {
+        font-size: 10px; font-weight: 600; color: #4a5568;
+        font-family: 'JetBrains Mono', monospace;
+        text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 6px;
     }
-    .explanation b {color: #5dade2;}
-    .stTabs [data-baseweb="tab-list"] {gap: 4px;}
-    .stTabs [data-baseweb="tab"] {padding: 10px 24px; font-weight: 600; font-size: 14px;}
-    h1 {font-size: 1.8rem !important;}
+    .kpi-card .value {
+        font-size: 26px; font-weight: 700;
+        font-family: 'JetBrains Mono', monospace; margin-bottom: 3px;
+    }
+    .kpi-card .delta {
+        font-size: 11px; font-weight: 400; color: #4a5568;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Info panels */
+    .terminal-note {
+        background: #0d1220; border: 1px solid #1a2332; border-left: 3px solid #00d4aa;
+        padding: 14px 18px; border-radius: 0 6px 6px 0;
+        margin-bottom: 18px; font-size: 13px; line-height: 1.7;
+        color: #8892a4; font-family: 'Inter', sans-serif;
+    }
+    .terminal-note b {color: #00d4aa;}
+    .terminal-note code {
+        background: #141c2b; padding: 2px 6px; border-radius: 3px;
+        color: #e8ecf2; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    }
+
+    /* Dataframes */
+    [data-testid="stDataFrame"] {border: 1px solid #1a2332; border-radius: 8px; overflow: hidden;}
+
+    /* Dividers */
+    [data-testid="stMarkdownContainer"] hr {border-color: #1a2332 !important; margin: 10px 0;}
+
+    /* Expander */
+    details {background: #0d1220 !important; border: 1px solid #1a2332 !important; border-radius: 8px !important;}
+    details summary {color: #8892a4 !important; font-family: 'JetBrains Mono', monospace !important; font-size: 13px !important;}
+    details p, details li {color: #8892a4 !important;}
+    details strong {color: #c0c8d8 !important;}
 </style>
 """, unsafe_allow_html=True)
 
+# ── Color palette: terminal greens, amber, cool grays ──
 COLORS = {
-    "strategy": "#3498DB",
-    "benchmark": "#95A5A6",
-    "positive": "#27AE60",
-    "negative": "#E74C3C",
-    "accent": "#8E44AD",
+    "strategy": "#00d4aa",
+    "benchmark": "#3a4556",
+    "positive": "#00d4aa",
+    "negative": "#ff6b6b",
+    "amber": "#ffb347",
+    "accent": "#7c5cfc",
+    "muted": "#4a5568",
 }
+
+CHART_LAYOUT = dict(
+    font=dict(family="JetBrains Mono, monospace", size=12, color="#8892a4"),
+    plot_bgcolor="#0a0e17", paper_bgcolor="#0a0e17",
+    legend=dict(
+        orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5,
+        bgcolor="rgba(13,18,32,0.9)", bordercolor="#1a2332", borderwidth=1,
+        font=dict(size=11, color="#8892a4"),
+    ),
+    hovermode="x unified",
+    hoverlabel=dict(bgcolor="#141c2b", bordercolor="#1a2332",
+                    font=dict(family="JetBrains Mono", size=12, color="#e8ecf2")),
+)
 
 CHART_CONFIG = {
     "displayModeBar": True,
@@ -70,36 +134,27 @@ CHART_CONFIG = {
 
 
 def styled(fig, h=480):
-    fig.update_layout(
-        font=dict(family="Inter, sans-serif", size=13, color="black"),
-        plot_bgcolor="rgba(250,250,252,1)", paper_bgcolor="white",
-        height=h, margin=dict(l=55, r=20, t=30, b=50),
-        legend=dict(
-            orientation="h", yanchor="bottom", y=1.01, xanchor="center", x=0.5,
-            bgcolor="rgba(255,255,255,0.95)", bordercolor="#E9ECEF", borderwidth=1,
-        ),
-        hovermode="x unified",
-    )
-    fig.update_xaxes(gridcolor="#F0F0F0", linecolor="#CED4DA")
-    fig.update_yaxes(gridcolor="#F0F0F0", linecolor="#CED4DA")
+    fig.update_layout(**CHART_LAYOUT, height=h, margin=dict(l=55, r=20, t=30, b=50))
+    fig.update_xaxes(gridcolor="#141c2b", linecolor="#1a2332", tickfont=dict(color="#4a5568"), zeroline=False)
+    fig.update_yaxes(gridcolor="#141c2b", linecolor="#1a2332", tickfont=dict(color="#4a5568"), zeroline=False)
     return fig
 
 
 # ── Sidebar ──
 with st.sidebar:
-    st.markdown("### Strategy Parameters")
+    st.markdown("### parameters")
     lookback = st.slider("Lookback period (trading days)", 20, 200, LOOKBACK, step=10)
     cost_bps = st.slider("Transaction cost (bps per trade)", 0, 30, TRANSACTION_COST_BPS)
 
     st.divider()
-    st.markdown("### Display")
+    st.markdown("### display")
     show_explanations = st.toggle("Show explanations", value=True)
     log_scale = st.toggle("Log scale (equity curves)", value=False)
 
     st.divider()
-    st.caption(f"Data: {TICKER_LABEL} ({TICKER_LABEL})")
-    st.caption("Period: 2010-01-01 to 2024-12-31")
-    st.caption("Source: Yahoo Finance via yfinance")
+    st.caption(f"DATA  {TICKER_LABEL}")
+    st.caption("PERIOD  2010-01-01 / 2024-12-31")
+    st.caption("SOURCE  Yahoo Finance")
 
 # ── Load & Run ──
 prices = get_prices()
@@ -108,20 +163,23 @@ s = summary(results)
 
 # ── Header ──
 st.markdown("# Momentum Strategy Backtester")
-st.markdown(f"*{lookback}-day momentum signal on {TICKER_LABEL} | Long when trailing return > 0, cash otherwise | {cost_bps}bps transaction cost*")
+st.markdown(f"<span style='color:#4a5568; font-family:JetBrains Mono,monospace; font-size:13px;'>"
+            f"{lookback}D LOOKBACK &nbsp;&middot;&nbsp; {TICKER_LABEL} &nbsp;&middot;&nbsp; "
+            f"LONG/CASH &nbsp;&middot;&nbsp; {cost_bps}BPS COST</span>", unsafe_allow_html=True)
 
 # ── KPI Cards ──
+pct_in = results["position"].mean() * 100
 kpi_html = '<div class="kpi-row">'
 metrics_display = [
-    ("Strategy Return", f"{s['strategy_return']*100:.1f}%", f"vs {s['benchmark_return']*100:.1f}% buy-and-hold", COLORS["strategy"]),
-    ("Sharpe Ratio", f"{s['strategy_sharpe']:.2f}", f"vs {s['benchmark_sharpe']:.2f} benchmark", COLORS["strategy"]),
-    ("Sortino Ratio", f"{s['strategy_sortino']:.2f}", f"vs {s['benchmark_sortino']:.2f} benchmark", COLORS["strategy"]),
-    ("Max Drawdown", f"{s['strategy_max_dd']*100:.1f}%", f"vs {s['benchmark_max_dd']*100:.1f}% benchmark", COLORS["negative"]),
-    ("Total Trades", f"{s['n_trades']}", f"Win rate: {s['win_rate']*100:.0f}%", COLORS["accent"]),
+    ("Ann. Return", f"{s['strategy_return']*100:.1f}%", f"vs {s['benchmark_return']*100:.1f}% B&H", COLORS["strategy"]),
+    ("Sharpe", f"{s['strategy_sharpe']:.2f}", f"vs {s['benchmark_sharpe']:.2f} B&H", COLORS["strategy"]),
+    ("Sortino", f"{s['strategy_sortino']:.2f}", f"vs {s['benchmark_sortino']:.2f} B&H", COLORS["strategy"]),
+    ("Max Drawdown", f"{s['strategy_max_dd']*100:.1f}%", f"vs {s['benchmark_max_dd']*100:.1f}% B&H", COLORS["negative"]),
+    ("Trades", f"{s['n_trades']}", f"{s['win_rate']*100:.0f}% win | {pct_in:.0f}% invested", COLORS["amber"]),
 ]
 for label, value, delta, color in metrics_display:
     kpi_html += f'''
-    <div class="kpi-card" style="border-left: 4px solid {color};">
+    <div class="kpi-card">
         <div class="label">{label}</div>
         <div class="value" style="color: {color};">{value}</div>
         <div class="delta">{delta}</div>
@@ -131,10 +189,10 @@ st.markdown(kpi_html, unsafe_allow_html=True)
 
 # ── Tabs ──
 tab1, tab2, tab3, tab4 = st.tabs([
-    "Equity Curves",
-    "Drawdown Analysis",
-    "Performance Diagnostics",
-    "Statistical Tests",
+    "EQUITY",
+    "DRAWDOWN",
+    "DIAGNOSTICS",
+    "SIGNIFICANCE",
 ])
 
 # ════════════════════════════════════════════════════════════════
@@ -143,10 +201,9 @@ tab1, tab2, tab3, tab4 = st.tabs([
 with tab1:
     if show_explanations:
         st.markdown(
-            '<div class="explanation">'
-            f"<b>Strategy:</b> Go long {TICKER_LABEL} when the trailing {lookback}-day return is positive, "
-            f"move to cash when negative. Transaction costs of {cost_bps}bps applied on each trade. "
-            "The gray line is buy-and-hold (always invested). "
+            '<div class="terminal-note">'
+            f"<b>Strategy:</b> Go long {TICKER_LABEL} when trailing <code>{lookback}D</code> return &gt; 0, "
+            f"cash otherwise. Cost of <code>{cost_bps}bps</code> per trade. "
             "Signal uses only past data — no look-ahead bias."
             "</div>", unsafe_allow_html=True,
         )
@@ -155,48 +212,47 @@ with tab1:
     fig.add_trace(go.Scatter(
         x=results.index, y=results["benchmark_equity"],
         mode="lines", name="Buy & Hold",
-        line=dict(color=COLORS["benchmark"], width=2, dash="dash"),
+        line=dict(color=COLORS["benchmark"], width=1.5, dash="dot"),
     ))
     fig.add_trace(go.Scatter(
         x=results.index, y=results["strategy_equity"],
-        mode="lines", name="Momentum Strategy",
-        line=dict(color=COLORS["strategy"], width=2.5),
+        mode="lines", name="Momentum",
+        line=dict(color=COLORS["strategy"], width=2),
     ))
     fig = styled(fig)
     if log_scale:
         fig.update_yaxes(type="log")
-    fig.update_yaxes(title_text="Growth of $1")
+    fig.update_yaxes(title_text="Growth of $1", title_font=dict(color="#4a5568"))
     st.plotly_chart(fig, use_container_width=True, config=CHART_CONFIG)
 
-    # Signal overlay chart
+    # Signal overlay
     st.markdown("#### Market Exposure")
     fig_sig = go.Figure()
     fig_sig.add_trace(go.Scatter(
         x=results.index, y=results["close"],
         mode="lines", name=TICKER_LABEL,
-        line=dict(color="black", width=1.5),
+        line=dict(color="#4a5568", width=1),
     ))
     long_periods = results[results["position"] == 1]
     cash_periods = results[results["position"] == 0]
     if not long_periods.empty:
         fig_sig.add_trace(go.Scatter(
             x=long_periods.index, y=long_periods["close"],
-            mode="markers", name="Long",
-            marker=dict(color=COLORS["positive"], size=2, opacity=0.4),
+            mode="markers", name="LONG",
+            marker=dict(color=COLORS["positive"], size=2, opacity=0.5),
         ))
     if not cash_periods.empty:
         fig_sig.add_trace(go.Scatter(
             x=cash_periods.index, y=cash_periods["close"],
-            mode="markers", name="Cash",
-            marker=dict(color=COLORS["negative"], size=2, opacity=0.4),
+            mode="markers", name="CASH",
+            marker=dict(color=COLORS["negative"], size=2, opacity=0.3),
         ))
-    fig_sig = styled(fig_sig, h=350)
-    fig_sig.update_yaxes(title_text="Price")
+    fig_sig = styled(fig_sig, h=320)
+    fig_sig.update_yaxes(title_text="Price", title_font=dict(color="#4a5568"))
     st.plotly_chart(fig_sig, use_container_width=True, config=CHART_CONFIG)
 
-    pct_in = results["position"].mean() * 100
-    st.caption(f"In market {pct_in:.0f}% of the time | {s['n_trades']} total trades | "
-               f"Avg ~{len(results)/max(s['n_trades'],1):.0f} trading days between trades")
+    st.caption(f"IN MARKET {pct_in:.0f}%  |  {s['n_trades']} TRADES  |  "
+               f"AVG {len(results)//max(s['n_trades'],1)}D BETWEEN TRADES")
 
 # ════════════════════════════════════════════════════════════════
 # TAB 2 — DRAWDOWN ANALYSIS
@@ -204,10 +260,9 @@ with tab1:
 with tab2:
     if show_explanations:
         st.markdown(
-            '<div class="explanation">'
-            "<b>Drawdown</b> = how far the portfolio has fallen from its peak. "
-            "A key benefit of momentum timing is avoiding the worst of market crashes. "
-            "The table shows the five deepest drawdown periods for each approach."
+            '<div class="terminal-note">'
+            "<b>Drawdown</b> measures how far the portfolio has fallen from its peak. "
+            "Momentum timing aims to sidestep the worst market crashes."
             "</div>", unsafe_allow_html=True,
         )
 
@@ -218,17 +273,17 @@ with tab2:
     fig.add_trace(go.Scatter(
         x=dd_bench.index, y=dd_bench * 100,
         mode="lines", name="Buy & Hold",
-        line=dict(color=COLORS["benchmark"], width=1.5),
-        fill="tozeroy", fillcolor="rgba(149,165,166,0.15)",
+        line=dict(color=COLORS["benchmark"], width=1),
+        fill="tozeroy", fillcolor="rgba(58,69,86,0.15)",
     ))
     fig.add_trace(go.Scatter(
         x=dd_strat.index, y=dd_strat * 100,
-        mode="lines", name="Momentum Strategy",
-        line=dict(color=COLORS["strategy"], width=2),
-        fill="tozeroy", fillcolor="rgba(52,152,219,0.15)",
+        mode="lines", name="Momentum",
+        line=dict(color=COLORS["negative"], width=1.5),
+        fill="tozeroy", fillcolor="rgba(255,107,107,0.08)",
     ))
     fig = styled(fig)
-    fig.update_yaxes(title_text="Drawdown (%)", ticksuffix="%")
+    fig.update_yaxes(title_text="Drawdown (%)", ticksuffix="%", title_font=dict(color="#4a5568"))
     st.plotly_chart(fig, use_container_width=True, config=CHART_CONFIG)
 
     c1, c2 = st.columns(2)
@@ -255,10 +310,9 @@ with tab2:
 with tab3:
     if show_explanations:
         st.markdown(
-            '<div class="explanation">'
-            "<b>Rolling Sharpe</b> shows how risk-adjusted performance varies over time. "
-            "The monthly heatmap reveals seasonal patterns and regime changes. "
-            "The histogram compares the distribution of daily returns."
+            '<div class="terminal-note">'
+            "<b>Rolling Sharpe</b> tracks risk-adjusted performance through time. "
+            "The heatmap reveals seasonal patterns. The histogram compares return distributions."
             "</div>", unsafe_allow_html=True,
         )
 
@@ -270,38 +324,43 @@ with tab3:
     fig.add_trace(go.Scatter(
         x=rs_bench.index, y=rs_bench,
         mode="lines", name="Buy & Hold",
-        line=dict(color=COLORS["benchmark"], width=1.5),
+        line=dict(color=COLORS["benchmark"], width=1),
     ))
     fig.add_trace(go.Scatter(
         x=rs_strat.index, y=rs_strat,
-        mode="lines", name="Momentum Strategy",
-        line=dict(color=COLORS["strategy"], width=2),
+        mode="lines", name="Momentum",
+        line=dict(color=COLORS["strategy"], width=1.5),
     ))
-    fig.add_hline(y=0, line_dash="dot", line_color="black", line_width=0.5)
+    fig.add_hline(y=0, line_dash="dot", line_color="#1a2332", line_width=1)
     fig = styled(fig, h=400)
-    fig.update_yaxes(title_text="Sharpe Ratio")
+    fig.update_yaxes(title_text="Sharpe Ratio", title_font=dict(color="#4a5568"))
     st.plotly_chart(fig, use_container_width=True, config=CHART_CONFIG)
 
-    # Monthly returns heatmap
-    st.markdown("#### Monthly Returns Heatmap (Strategy)")
+    # Monthly heatmap
+    st.markdown("#### Monthly Returns Heatmap")
     mr = monthly_returns(results["strategy_equity"])
     fig_hm = go.Figure(data=go.Heatmap(
         z=mr.values * 100,
         x=mr.columns.tolist(),
         y=[str(y) for y in mr.index.tolist()],
-        colorscale=[[0, "#E74C3C"], [0.5, "#FDFEFE"], [1, "#27AE60"]],
+        colorscale=[
+            [0, "#ff6b6b"], [0.35, "#1a2332"], [0.5, "#0d1220"],
+            [0.65, "#0d2a22"], [1, "#00d4aa"],
+        ],
         zmid=0,
-        text=[[f"{v*100:.1f}%" for v in row] for row in mr.values],
+        text=[[f"{v*100:.1f}" for v in row] for row in mr.values],
         texttemplate="%{text}",
-        textfont=dict(size=10),
-        colorbar=dict(title="%", ticksuffix="%"),
+        textfont=dict(size=10, color="#8892a4", family="JetBrains Mono"),
+        colorbar=dict(title="%", ticksuffix="%", tickfont=dict(color="#4a5568"),
+                      titlefont=dict(color="#4a5568")),
     ))
     fig_hm.update_layout(
         height=max(250, 50 + len(mr) * 30),
         margin=dict(l=50, r=20, t=10, b=30),
-        font=dict(size=12, family="Inter, sans-serif"),
-        paper_bgcolor="white", plot_bgcolor="white",
+        font=dict(size=11, family="JetBrains Mono, monospace", color="#4a5568"),
+        paper_bgcolor="#0a0e17", plot_bgcolor="#0a0e17",
         yaxis=dict(autorange="reversed"),
+        xaxis=dict(tickfont=dict(color="#4a5568")),
     )
     st.plotly_chart(fig_hm, use_container_width=True, config=CHART_CONFIG)
 
@@ -310,21 +369,21 @@ with tab3:
     fig = go.Figure()
     fig.add_trace(go.Histogram(
         x=results["daily_return"] * 100,
-        name="Buy & Hold", opacity=0.6,
+        name="Buy & Hold", opacity=0.4,
         marker_color=COLORS["benchmark"], nbinsx=100,
     ))
     fig.add_trace(go.Histogram(
         x=results["strategy_return"] * 100,
-        name="Momentum Strategy", opacity=0.6,
+        name="Momentum", opacity=0.6,
         marker_color=COLORS["strategy"], nbinsx=100,
     ))
     fig.update_layout(barmode="overlay")
     fig = styled(fig, h=380)
-    fig.update_xaxes(title_text="Daily Return (%)")
-    fig.update_yaxes(title_text="Frequency")
+    fig.update_xaxes(title_text="Daily Return (%)", title_font=dict(color="#4a5568"))
+    fig.update_yaxes(title_text="Frequency", title_font=dict(color="#4a5568"))
     st.plotly_chart(fig, use_container_width=True, config=CHART_CONFIG)
 
-    # Summary stats table
+    # Stats table
     strat_rets = results["strategy_return"]
     bench_rets = results["daily_return"]
     stats_df = pd.DataFrame({
@@ -351,12 +410,10 @@ with tab3:
 with tab4:
     if show_explanations:
         st.markdown(
-            '<div class="explanation">'
-            "<b>Is the performance difference real or just noise?</b> "
-            "The t-test checks whether the average daily excess return is significantly different from zero. "
-            "The bootstrap builds a confidence interval by resampling the data 10,000 times. "
-            "If the confidence interval includes zero, we cannot reject the null hypothesis that the strategy "
-            "adds no value over buy-and-hold."
+            '<div class="terminal-note">'
+            "<b>Is the performance difference real or noise?</b> "
+            "The t-test checks if mean daily excess return differs from zero. "
+            "The bootstrap resamples 10,000 times to build a confidence interval."
             "</div>", unsafe_allow_html=True,
         )
 
@@ -364,87 +421,84 @@ with tab4:
     boot = bootstrap_excess_return(results)
 
     st.markdown("#### T-Test on Daily Excess Returns")
-    sig_label = "Significant (p < 0.05)" if ttest["p_value"] < 0.05 else "Not significant (p >= 0.05)"
+    sig_label = "SIGNIFICANT (p < 0.05)" if ttest["p_value"] < 0.05 else "NOT SIGNIFICANT (p >= 0.05)"
     sig_color = COLORS["positive"] if ttest["p_value"] < 0.05 else COLORS["negative"]
 
     ttest_html = f'''
     <div class="kpi-row">
-        <div class="kpi-card" style="border-left: 4px solid {sig_color};">
+        <div class="kpi-card">
             <div class="label">t-statistic</div>
             <div class="value" style="color: {sig_color};">{ttest["t_stat"]:.3f}</div>
-            <div class="delta">{ttest["n_obs"]:,} daily observations</div>
+            <div class="delta">{ttest["n_obs"]:,} observations</div>
         </div>
-        <div class="kpi-card" style="border-left: 4px solid {sig_color};">
+        <div class="kpi-card">
             <div class="label">p-value</div>
             <div class="value" style="color: {sig_color};">{ttest["p_value"]:.4f}</div>
             <div class="delta">{sig_label}</div>
         </div>
-        <div class="kpi-card" style="border-left: 4px solid #3498DB;">
+        <div class="kpi-card">
             <div class="label">Mean Daily Excess</div>
-            <div class="value" style="color: #3498DB;">{ttest["mean_daily_excess"]*10000:.2f}bps</div>
-            <div class="delta">Annualized: {ttest["mean_daily_excess"]*252*100:.2f}%</div>
+            <div class="value" style="color: {COLORS["amber"]};">{ttest["mean_daily_excess"]*10000:.2f}bps</div>
+            <div class="delta">annualized: {ttest["mean_daily_excess"]*252*100:.2f}%</div>
         </div>
     </div>'''
     st.markdown(ttest_html, unsafe_allow_html=True)
 
     st.divider()
-    st.markdown("#### Bootstrap Confidence Interval (Annualized Excess Return)")
+    st.markdown("#### Bootstrap Confidence Interval")
 
     ci_contains_zero = boot["ci_low"] <= 0 <= boot["ci_high"]
-    ci_label = "CI includes zero — cannot reject null" if ci_contains_zero else "CI excludes zero — significant"
+    ci_label = "CI INCLUDES ZERO" if ci_contains_zero else "CI EXCLUDES ZERO"
     ci_color = COLORS["negative"] if ci_contains_zero else COLORS["positive"]
 
     boot_html = f'''
     <div class="kpi-row">
-        <div class="kpi-card" style="border-left: 4px solid {ci_color};">
-            <div class="label">Mean Annualized Excess</div>
+        <div class="kpi-card">
+            <div class="label">Mean Ann. Excess</div>
             <div class="value" style="color: {ci_color};">{boot["mean_ann_excess"]*100:.2f}%</div>
             <div class="delta">{ci_label}</div>
         </div>
-        <div class="kpi-card" style="border-left: 4px solid #8E44AD;">
-            <div class="label">{boot["ci_level"]*100:.0f}% Confidence Interval</div>
-            <div class="value" style="color: #8E44AD;">[{boot["ci_low"]*100:.2f}%, {boot["ci_high"]*100:.2f}%]</div>
+        <div class="kpi-card">
+            <div class="label">{boot["ci_level"]*100:.0f}% CI</div>
+            <div class="value" style="color: {COLORS["accent"]};">[{boot["ci_low"]*100:.2f}, {boot["ci_high"]*100:.2f}]%</div>
             <div class="delta">10,000 bootstrap iterations</div>
         </div>
     </div>'''
     st.markdown(boot_html, unsafe_allow_html=True)
 
-    # Cumulative excess return chart
+    # Cumulative excess return
     st.divider()
-    st.markdown("#### Cumulative Excess Return Over Time")
+    st.markdown("#### Cumulative Excess Return")
     cum_excess = (1 + results["excess_return"]).cumprod() - 1
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=cum_excess.index, y=cum_excess * 100,
-        mode="lines", name="Cumulative Excess Return",
-        line=dict(color=COLORS["accent"], width=2),
+        mode="lines", name="Cumulative Excess",
+        line=dict(color=COLORS["accent"], width=1.5),
         fill="tozeroy",
-        fillcolor="rgba(142,68,171,0.1)",
+        fillcolor="rgba(124,92,252,0.06)",
     ))
-    fig.add_hline(y=0, line_dash="dash", line_color="black", line_width=1)
+    fig.add_hline(y=0, line_dash="dash", line_color="#1a2332", line_width=1)
     fig = styled(fig, h=400)
-    fig.update_yaxes(title_text="Cumulative Excess (%)", ticksuffix="%")
+    fig.update_yaxes(title_text="Cumulative Excess (%)", ticksuffix="%", title_font=dict(color="#4a5568"))
     st.plotly_chart(fig, use_container_width=True, config=CHART_CONFIG)
 
-    with st.expander("Methodology Notes"):
+    with st.expander("METHODOLOGY"):
         st.markdown(f"""
-        **Strategy:** {lookback}-day momentum on {TICKER_LABEL}. Go long when trailing {lookback}-day
-        return > 0, else hold cash. Position determined by prior day's signal (no look-ahead bias).
+        **Strategy:** `{lookback}D` momentum on {TICKER_LABEL}. Long when trailing return > 0, cash otherwise.
+        Position determined by prior day's signal (no look-ahead bias).
 
-        **Transaction costs:** {cost_bps} basis points per one-way trade, applied on each signal change.
-        No slippage modeled. {TICKER_LABEL} is highly liquid; 10bps is conservative for institutional trading.
+        **Transaction costs:** `{cost_bps}bps` per one-way trade on each signal change.
+        No slippage modeled. {TICKER_LABEL} is highly liquid.
 
-        **t-test:** Two-sided test on daily excess returns (strategy minus benchmark).
-        H0: mean excess return = 0. Uses scipy.stats.ttest_1samp.
+        **t-test:** Two-sided on daily excess returns. H0: mean excess = 0.
 
-        **Bootstrap:** 10,000 iterations resampling daily excess returns with replacement.
-        Annualized by multiplying mean daily excess by 252. Reports percentile-based 95% CI.
-        Limitation: assumes i.i.d. daily returns; autocorrelation is low (~0.01) for {TICKER_LABEL}.
+        **Bootstrap:** 10,000 resamples with replacement. Annualized by `mean_daily * 252`.
+        95% percentile CI. Assumes approximately i.i.d. daily returns.
 
-        **Period:** 2010-01-01 to 2024-12-31. Covers post-GFC recovery, 2018 volatility,
-        COVID crash, and 2022 bear market. No parameter optimization was performed.
+        **Period:** 2010-01-01 to 2024-12-31. No parameter optimization performed.
         """)
 
 # ── Footer ──
 st.divider()
-st.caption("Built with Python, Streamlit, Plotly, yfinance, SciPy. Data: Yahoo Finance.")
+st.caption("BUILT WITH PYTHON / STREAMLIT / PLOTLY / YFINANCE / SCIPY")

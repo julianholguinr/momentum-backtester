@@ -351,8 +351,10 @@ with tab3:
         text=[[f"{v*100:.1f}" for v in row] for row in mr.values],
         texttemplate="%{text}",
         textfont=dict(size=10, color="#8892a4", family="JetBrains Mono"),
-        colorbar=dict(title="%", ticksuffix="%", tickfont=dict(color="#4a5568"),
-                      titlefont=dict(color="#4a5568")),
+        colorbar=dict(
+            title=dict(text="%", font=dict(color="#4a5568")),
+            ticksuffix="%", tickfont=dict(color="#4a5568"),
+        ),
     ))
     fig_hm.update_layout(
         height=max(250, 50 + len(mr) * 30),
